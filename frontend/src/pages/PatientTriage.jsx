@@ -21,6 +21,18 @@ import api from "../services/api";
 
 import "../styles/patientTriage.css";
 
+const buildApiUrl = (path) => {
+  const baseUrl =
+    api.defaults.baseURL || "";
+
+  const normalizedPath =
+    path.startsWith("/")
+      ? path
+      : `/${path}`;
+
+  return `${baseUrl}${normalizedPath}`;
+};
+
 function PatientTriage() {
 
   const [recording, setRecording] =
@@ -246,7 +258,7 @@ function PatientTriage() {
   useEffect(() => {
     if(voiceResponse) {
       const audio = new Audio(
-        `http://127.0.0.1:8000/${voiceResponse}`
+        buildApiUrl(voiceResponse)
       );
       audio.play();
     }
@@ -258,7 +270,7 @@ function PatientTriage() {
 
     const audio =
       new Audio(
-        `http://127.0.0.1:8000/${voiceFile}`
+        buildApiUrl(voiceFile)
       );
 
     audio.play();

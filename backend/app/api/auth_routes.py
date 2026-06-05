@@ -27,7 +27,13 @@ from app.services.user_service import (
 )
 
 from app.core.auth import (
-    create_access_token
+    create_access_token,
+    get_token_session_id,
+    revoke_access_token
+)
+
+from app.core.dependencies import (
+    oauth2_scheme
 )
 
 router = APIRouter(
@@ -101,5 +107,24 @@ def login(
 
     return {
         "access_token": token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "session_id": get_token_session_id(token)
+    }
+
+
+@router.post("/logout")
+def logout(
+    token: str = Depends(oauth2_scheme)
+):
+    revoked = revoke_access_token(token)
+
+    if not revoked:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid session"
+        )
+
+    return {
+        "success": True,
+        "message": "Logged out successfully"
     }

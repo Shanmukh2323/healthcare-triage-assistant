@@ -4,11 +4,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
+import os
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.api.voice_routes import router as voice_router
 from app.api.routes.symptom import router as symptom_router
 
 from app.db.session import engine
+from app.core.redis_client import ping_redis
 
 from app.api.history_routes import (
     router as history_router
@@ -35,12 +38,18 @@ from app.api.patient_management_routes import (
 )
 
 
-app = FastAPI()
+app = FastAPI(
+    title="Healthcare Triage Assistant API"
+)
 
 # Middleware
 origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000"
+    ).split(",")
+    if origin.strip()
 ]
 
 app.add_middleware(AuditMiddleware)
@@ -80,6 +89,8 @@ app.mount(
     name="audio_responses"
 )
 
+Instrumentator().instrument(app).expose(app)
+
 @app.get("/")
 def root():
     return {
@@ -93,6 +104,23 @@ def health_check():
         "status": "success",
         "message": "Backend connected successfully"
     }
+
+
+@app.get("/redis-check")
+def redis_check():
+    try:
+        ping_redis()
+
+        return {
+            "status": "success",
+            "message": "Redis connected successfully"
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
 
 
 @app.get("/db-check")

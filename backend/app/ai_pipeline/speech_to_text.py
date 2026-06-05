@@ -7,13 +7,21 @@ from app.utils.audio_converter import convert_to_wav
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
+pipe = None
 
-pipe = pipeline(
-    task="automatic-speech-recognition",
-    model="openai/whisper-small",
-    chunk_length_s=30,
-    device=0 if DEVICE == "cuda" else -1,
-)
+
+def get_speech_pipeline():
+    global pipe
+
+    if pipe is None:
+        pipe = pipeline(
+            task="automatic-speech-recognition",
+            model="openai/whisper-small",
+            chunk_length_s=30,
+            device=0 if DEVICE == "cuda" else -1,
+        )
+
+    return pipe
 
 
 def transcribe_audio(audio_path: str):
@@ -25,7 +33,7 @@ def transcribe_audio(audio_path: str):
     print(wav_path)
     print("====================\n")
 
-    result = pipe(
+    result = get_speech_pipeline()(
         wav_path,
         generate_kwargs={
             "task": "transcribe",

@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Healthcare Triage Assistant
+    orgId: 1
+    folder: Healthcare Triage Assistant
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

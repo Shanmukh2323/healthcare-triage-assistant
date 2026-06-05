@@ -48,3 +48,4 @@ class UserLogin(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
+    session_id: str | None = None

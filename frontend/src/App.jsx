@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import LandingPage from "./pages/LandingPage";
+import api from "./services/api";
 
 
 
@@ -15,7 +16,13 @@ function App() {
   const token =
     localStorage.getItem("token");
 
-  const logout = () => {
+  const logout = async () => {
+
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // Local logout should still complete if the server session is already gone.
+    }
 
     localStorage.removeItem(
       "token"

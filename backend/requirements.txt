@@ -1,14 +1,14 @@
 ﻿annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.13.0
-click==8.4.1
+click==8.1.8
 colorama==0.4.6
 fastapi==0.136.3
 h11==0.16.0
 idna==3.16
 pydantic==2.13.4
 pydantic_core==2.46.4
-starlette==1.1.0
+starlette>=0.46.0,<1.0.0
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.48.0
@@ -24,3 +24,5 @@ gTTS==2.5.4
 pydub==0.25.1
 torch==2.9.1
 transformers==4.57.3
+redis==7.1.0
+prometheus-fastapi-instrumentator==7.1.0

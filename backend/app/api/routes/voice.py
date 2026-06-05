@@ -1,12 +1,15 @@
 from fastapi import (
     APIRouter,
     UploadFile,
-    File
+    File,
+    Depends
 )
 
 from app.services.voice_service import (
     save_audio_file
 )
+from app.core.dependencies import get_current_user
+from app.core.permissions import require_role
 
 router = APIRouter(
     prefix="/voice",
@@ -16,8 +19,13 @@ router = APIRouter(
 
 @router.post("/upload")
 async def upload_voice(
-    audio: UploadFile = File(...)
+    audio: UploadFile = File(...),
+    current_user=Depends(get_current_user)
 ):
+    require_role(
+        current_user,
+        ["patient"]
+    )
 
     file_path = save_audio_file(audio)
 
